@@ -19,7 +19,8 @@
 			"saveOutput": true,
 			"language_info": {
 				"name": "python"
-			}
+			},
+			"sessionKeepAliveTimeout": 30
 		},
 		"cells": [
 			{
@@ -42,8 +43,7 @@
 					"%pip install scikit-learn==0.20.3\r\n",
 					"\r\n",
 					""
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "markdown",
@@ -57,8 +57,7 @@
 				"source": [
 					"## Load data\r\n",
 					"Get a sample data of nyc yellow taxi from Azure Open Datasets"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -78,7 +77,6 @@
 					"#%pip list\n",
 					"#%pip install scikit-learn==0.20.3"
 				],
-				"attachments": null,
 				"execution_count": 16
 			},
 			{
@@ -99,7 +97,6 @@
 					"nyc_tlc_df = nyc_tlc.to_pandas_dataframe()\r\n",
 					"nyc_tlc_df.info()"
 				],
-				"attachments": null,
 				"execution_count": 17
 			},
 			{
@@ -125,7 +122,6 @@
 					"sampled_df = nyc_tlc_df.sample(n=10000, random_state=123)\r\n",
 					"display(sampled_df.head(5))"
 				],
-				"attachments": null,
 				"execution_count": 18
 			},
 			{
@@ -141,8 +137,7 @@
 					"## Prepare and featurize data\r\n",
 					"- There are extra dimensions that are not going to be useful in the model. We just take the dimensions that we need and put them into the featurised dataframe. \r\n",
 					"- There are also a bunch of outliers in the data so we need to filter them out."
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -191,7 +186,6 @@
 					"display(featurized_df.head(5))\r\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 19
 			},
 			{
@@ -221,7 +215,6 @@
 					"\r\n",
 					"filtered_df.info()"
 				],
-				"attachments": null,
 				"execution_count": 20
 			},
 			{
@@ -237,8 +230,7 @@
 					"## Split training and testing data sets\r\n",
 					"- 70% of the data is used to train the model.\r\n",
 					"- 30% of the data is used to test the model."
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -268,7 +260,6 @@
 					"x_test = pandas.DataFrame(test_df.drop(['tipped'], axis = 1))\r\n",
 					"y_test = pandas.DataFrame(test_df.iloc[:,test_df.columns.tolist().index('tipped')])"
 				],
-				"attachments": null,
 				"execution_count": 22
 			},
 			{
@@ -283,8 +274,7 @@
 				"source": [
 					"## Export test data as CSV\r\n",
 					"Export the test data as a CSV file. Later, we will load the CSV file into Synapse SQL pool to test the model."
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -306,7 +296,6 @@
 				"source": [
 					"test_df.to_csv('test_data.csv', index=False)"
 				],
-				"attachments": null,
 				"execution_count": 6
 			},
 			{
@@ -321,8 +310,7 @@
 				"source": [
 					"## Train model\r\n",
 					"Train a bi-classifier to predict whether a taxi trip will be a tipped or not."
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -375,7 +363,6 @@
 					"# Train the model\r\n",
 					"clf.fit(x_train, y_train)"
 				],
-				"attachments": null,
 				"execution_count": 24
 			},
 			{
@@ -400,7 +387,6 @@
 					"score = clf.score(x_test, y_test)\r\n",
 					"print(score)"
 				],
-				"attachments": null,
 				"execution_count": 25
 			},
 			{
@@ -415,8 +401,7 @@
 				"source": [
 					"## Convert the model to ONNX format\r\n",
 					"Currently, T-SQL scoring only supports ONNX model format (https://onnx.ai/)."
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -458,7 +443,6 @@
 					"model_inputs = convert_dataframe_schema(x_train)\r\n",
 					"onnx_model = convert_sklearn(clf, \"nyc_taxi_tip_predict\", model_inputs)"
 				],
-				"attachments": null,
 				"execution_count": 9
 			},
 			{
@@ -472,8 +456,7 @@
 				},
 				"source": [
 					"## Register the model with MLFlow"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -498,7 +481,6 @@
 					"ws = Workspace.from_config()\r\n",
 					"print(ws.name, ws.resource_group, ws.location, ws.subscription_id, sep='\\n')"
 				],
-				"attachments": null,
 				"execution_count": 10
 			},
 			{
@@ -543,7 +525,6 @@
 					"    mlflow.register_model('runs:/' + run.info.run_id + '/' + artifact_path, 'nyc_taxi_tip_predict')\r\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 11
 			}
 		]
